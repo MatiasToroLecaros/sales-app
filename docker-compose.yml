@@ -23,7 +23,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
+      - ./src:/app/src:delegated
+      - ./nodemon.json:/app/nodemon.json:delegated
+      - ./tsconfig.json:/app/tsconfig.json:delegated
+      - ./package.json:/app/package.json:ro
       - /app/node_modules
     environment:
       - DB_HOST=db
@@ -32,7 +35,9 @@ services:
       - DB_PASSWORD=mypassword
       - DB_NAME=mydb
       - JWT_SECRET=supersecret
+      - NODE_ENV=development
     depends_on:
       db:
         condition: service_healthy
-    command: ["npm", "run", "start:dev"]
+    restart: unless-stopped
+    command: ["npm", "run", "start:docker"]

@@ -25,7 +25,7 @@ export class AuthService {
     const hashed = await bcrypt.hash(dto.password, 10);
     const nuevo = {
       id: this.idCounter++,
-      nombre: dto.nombre,
+      nombre: dto.name,
       email: dto.email,
       password: hashed,
     };

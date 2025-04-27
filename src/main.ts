@@ -1,9 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // Crear una instancia de logger
+  const logger = new Logger('Bootstrap');
+  
+  // Añadir más verbosidad en modo desarrollo
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
 
   const config = new DocumentBuilder()
     .setTitle('API de Ventas')
@@ -17,5 +24,9 @@ async function bootstrap() {
 
   app.enableCors();
   await app.listen(3000);
+  
+  // Mensaje para confirmar que la aplicación está corriendo
+  logger.log(`Application is running on: ${await app.getUrl()}`);
+  logger.log('Hot reload is enabled. Waiting for file changes...');
 }
 bootstrap();

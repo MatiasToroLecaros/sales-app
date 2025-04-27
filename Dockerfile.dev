@@ -2,14 +2,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-
+# Instalar dependencias específicas para mejor compatibilidad con Docker
+RUN npm install -g nodemon
+# Instalar dependencias primero (mejor para caching)
 COPY package*.json ./
 RUN npm install
 
-RUN npm install -g nodemon
+# Asegúrate de tener las herramientas de desarrollo de NestJS
+RUN npm install -g @nestjs/cli
 
-COPY . .
+# No es necesario copiar el código aquí, ya que usamos volúmenes
+# COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:dev"]
+# Configuración específica para polling de archivos dentro de Docker
+CMD ["npm", "run", "start:docker"]
