@@ -1,6 +1,7 @@
 // backend/src/sales/entities/sale.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity('VENTAS') // Nombre de tabla en español y mayúsculas
 export class Sale {
@@ -30,4 +31,11 @@ export class Sale {
   })
   @JoinColumn({ name: 'ID_PRODUCTO' }) // Nombre de la columna de clave foránea
   product: Product;
+
+  @ManyToOne(() => User, user => user.sales, {
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE'
+  })
+  @JoinColumn({ name: 'ID_USUARIO' })
+  user: User;
 }
