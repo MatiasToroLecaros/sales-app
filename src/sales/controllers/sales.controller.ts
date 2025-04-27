@@ -16,7 +16,7 @@ import {
   import { CreateSaleDto } from '../dto/create-sale.dto';
   import { UpdateSaleDto } from '../dto/update-sale.dto';
   import { FilterSalesDto } from '../dto/filter-sales.dto';
-  import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+  import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
   
   @ApiTags('sales')
   @ApiBearerAuth()
