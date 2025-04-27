@@ -8,6 +8,12 @@ export class CreateSaleDto {
   @IsPositive()
   productId: number;
 
+  @ApiProperty({ description: 'User ID', example: 1 })
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  userId: number;
+  
   @ApiProperty({ description: 'Quantity sold', example: 2 })
   @IsNotEmpty()
   @IsNumber()

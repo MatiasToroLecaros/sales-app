@@ -1,12 +1,13 @@
 // backend/src/sales/sales.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
-import { Sale } from './entities/sale.entity';
-import { CreateSaleDto } from './dto/create-sale.dto';
-import { UpdateSaleDto } from './dto/update-sale.dto';
-import { FilterSalesDto } from './dto/filter-sales.dto';
-import { Product } from 'src/products/entities/product.entity';
+import { Repository } from 'typeorm';
+import { Sale } from '../entities/sale.entity';
+import { CreateSaleDto } from '../dto/create-sale.dto';
+import { UpdateSaleDto } from '../dto/update-sale.dto';
+import { FilterSalesDto } from '../dto/filter-sales.dto';
+import { Product } from '../../products/entities/product.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Injectable()
 export class SalesService {
@@ -15,15 +16,13 @@ export class SalesService {
     private readonly saleRepository: Repository<Sale>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {
-    // Inicializar datos de ejemplo (simulando integración con Google Sheets)
+    // Initialize sample data
     this.initializeSampleData();
   }
 
-  /**
-   * Simulates the integration with an external data source like Google Sheets
-   * by populating the database with sample sales data
-   */
   private async initializeSampleData() {
     // First check if we already have products data
     const productCount = await this.productRepository.count();
@@ -41,21 +40,35 @@ export class SalesService {
       }
     }
 
+    // Check for users
+    const userCount = await this.userRepository.count();
+    if (userCount === 0) {
+      // Create admin user
+      const adminUser = this.userRepository.create({
+        name: 'Administrator',
+        email: 'admin@example.com',
+        password: 'admin123', // In a real application, this would be hashed
+      });
+      await this.userRepository.save(adminUser);
+    }
+
     // Then check if we already have sales data
     const salesCount = await this.saleRepository.count();
     if (salesCount > 0) return;
 
-    // Get all products
+    // Get all products and the admin user
     const products = await this.productRepository.find();
-    if (products.length === 0) return;
+    const adminUser = await this.userRepository.findOne({ where: { email: 'admin@example.com' } });
+    
+    if (products.length === 0 || !adminUser) return;
 
     // Sample sales data (simulating data from Google Sheets)
     const sampleData = [
-      { productId: products[0].id, quantity: 5, unitPrice: 199.99, date: new Date('2023-01-15') },
-      { productId: products[1].id, quantity: 2, unitPrice: 499.99, date: new Date('2023-01-20') },
-      { productId: products[0].id, quantity: 3, unitPrice: 199.99, date: new Date('2023-02-05') },
-      { productId: products[2].id, quantity: 1, unitPrice: 999.99, date: new Date('2023-02-15') },
-      { productId: products[1].id, quantity: 4, unitPrice: 499.99, date: new Date('2023-03-10') },
+      { productId: products[0].id, userId: adminUser.id, quantity: 5, unitPrice: 199.99, date: new Date('2023-01-15') },
+      { productId: products[1].id, userId: adminUser.id, quantity: 2, unitPrice: 499.99, date: new Date('2023-01-20') },
+      { productId: products[0].id, userId: adminUser.id, quantity: 3, unitPrice: 199.99, date: new Date('2023-02-05') },
+      { productId: products[2].id, userId: adminUser.id, quantity: 1, unitPrice: 999.99, date: new Date('2023-02-15') },
+      { productId: products[1].id, userId: adminUser.id, quantity: 4, unitPrice: 499.99, date: new Date('2023-03-10') },
     ];
 
     // Create and save each sample sale
@@ -67,9 +80,15 @@ export class SalesService {
 
   async create(createSaleDto: CreateSaleDto): Promise<Sale> {
     // Verify product exists
-    const product = await this.productRepository.findOneBy({ id: createSaleDto.productId });
+    const product = await this.productRepository.findOne({ where: { id: createSaleDto.productId } });
     if (!product) {
       throw new NotFoundException(`Product with ID ${createSaleDto.productId} not found`);
+    }
+
+    // Verify user exists
+    const user = await this.userRepository.findOne({ where: { id: createSaleDto.userId } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${createSaleDto.userId} not found`);
     }
 
     const sale = this.saleRepository.create(createSaleDto);
@@ -77,13 +96,15 @@ export class SalesService {
   }
 
   async findAll(): Promise<Sale[]> {
-    return this.saleRepository.find({ relations: ['product'] });
+    return this.saleRepository.find({ 
+      relations: ['product', 'user'] 
+    });
   }
 
   async findOne(id: number): Promise<Sale> {
     const sale = await this.saleRepository.findOne({ 
       where: { id }, 
-      relations: ['product'] 
+      relations: ['product', 'user'] 
     });
     
     if (!sale) {
@@ -96,9 +117,17 @@ export class SalesService {
   async update(id: number, updateSaleDto: UpdateSaleDto): Promise<Sale> {
     // Verify product exists if productId is being updated
     if (updateSaleDto.productId) {
-      const product = await this.productRepository.findOneBy({ id: updateSaleDto.productId });
+      const product = await this.productRepository.findOne({ where: { id: updateSaleDto.productId } });
       if (!product) {
         throw new NotFoundException(`Product with ID ${updateSaleDto.productId} not found`);
+      }
+    }
+
+    // Verify user exists if userId is being updated
+    if (updateSaleDto.userId) {
+      const user = await this.userRepository.findOne({ where: { id: updateSaleDto.userId } });
+      if (!user) {
+        throw new NotFoundException(`User with ID ${updateSaleDto.userId} not found`);
       }
     }
 
@@ -120,9 +149,10 @@ export class SalesService {
   }
 
   async findFiltered(filterDto: FilterSalesDto): Promise<Sale[]> {
-    const { startDate, endDate, productId } = filterDto;
+    const { startDate, endDate, productId, userId } = filterDto;
     const query = this.saleRepository.createQueryBuilder('sale')
-      .leftJoinAndSelect('sale.product', 'product');
+      .leftJoinAndSelect('sale.product', 'product')
+      .leftJoinAndSelect('sale.user', 'user');
     
     // Apply filters if provided
     if (startDate && endDate) {
@@ -142,6 +172,10 @@ export class SalesService {
     
     if (productId) {
       query.andWhere('sale.productId = :productId', { productId });
+    }
+
+    if (userId) {
+      query.andWhere('sale.userId = :userId', { userId });
     }
     
     return query.getMany();
@@ -164,6 +198,16 @@ export class SalesService {
       .groupBy('product.name')
       .getRawMany();
     
+    // Sales by user
+    const salesByUserQuery = await this.saleRepository
+      .createQueryBuilder('sale')
+      .leftJoin('sale.user', 'user')
+      .select('user.name', 'userName')
+      .addSelect('COUNT(sale.id)', 'totalSales')
+      .addSelect('SUM(sale.quantity * sale.unitPrice)', 'totalAmount')
+      .groupBy('user.name')
+      .getRawMany();
+    
     // Monthly sales
     const monthlySalesQuery = await this.saleRepository
       .createQueryBuilder('sale')
@@ -176,6 +220,7 @@ export class SalesService {
     return {
       totalSales: totalQuery.total || 0,
       salesByProduct: salesByProductQuery,
+      salesByUser: salesByUserQuery,
       monthlySales: monthlySalesQuery,
     };
   }

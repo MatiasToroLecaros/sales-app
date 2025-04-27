@@ -12,11 +12,11 @@ import {
     ParseIntPipe
   } from '@nestjs/common';
   import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-  import { SalesService } from './sales.service';
-  import { CreateSaleDto } from './dto/create-sale.dto';
-  import { UpdateSaleDto } from './dto/update-sale.dto';
-  import { FilterSalesDto } from './dto/filter-sales.dto';
-  import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+  import { SalesService } from '../services/sales.service';
+  import { CreateSaleDto } from '../dto/create-sale.dto';
+  import { UpdateSaleDto } from '../dto/update-sale.dto';
+  import { FilterSalesDto } from '../dto/filter-sales.dto';
+  import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
   
   @ApiTags('sales')
   @ApiBearerAuth()

@@ -16,4 +16,9 @@ export class FilterSalesDto {
     @IsOptional()
     @IsNumber()
     productId?: number;
+    
+    @ApiProperty({ required: false, description: 'User ID', example: 1 })
+    @IsOptional()
+    @IsNumber()
+    userId?: number;
   }
