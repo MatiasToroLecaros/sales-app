@@ -72,8 +72,8 @@ import {
     @ApiOperation({ summary: 'Delete a sale' })
     @ApiResponse({ status: 200, description: 'Sale deleted successfully' })
     @ApiResponse({ status: 404, description: 'Sale not found' })
-    remove(@Param('id', ParseIntPipe) id: number) {
-      return this.salesService.remove(id);
+    async remove(@Param('id', ParseIntPipe) id: number) {
+      await this.salesService.remove(id);
       return { message: 'Sale deleted' };
     }
   }

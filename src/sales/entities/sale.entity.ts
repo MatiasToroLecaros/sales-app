@@ -1,24 +1,33 @@
+// backend/src/sales/entities/sale.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
 
-@Entity()
+@Entity('VENTAS') // Nombre de tabla en español y mayúsculas
 export class Sale {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'ID_VENTA' })
   id: number;
 
-  @Column()
+  @Column({ name: 'ID_PRODUCTO' })
   productId: number;
 
-  @Column()
+  @Column({ name: 'CANTIDAD', type: 'int' })
   quantity: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column({ 
+    name: 'PRECIO_UNITARIO', 
+    type: 'decimal', 
+    precision: 10, 
+    scale: 2 
+  })
   unitPrice: number;
 
-  @Column()
+  @Column({ name: 'FECHA_VENTA', type: 'timestamp' })
   date: Date;
 
-  @ManyToOne(() => Product)
-  @JoinColumn({ name: 'productId' })
+  @ManyToOne(() => Product, product => product.sales, { 
+    onDelete: 'RESTRICT', 
+    onUpdate: 'CASCADE' 
+  })
+  @JoinColumn({ name: 'ID_PRODUCTO' }) // Nombre de la columna de clave foránea
   product: Product;
 }
