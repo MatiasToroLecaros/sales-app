@@ -19,6 +19,9 @@ export class ReportsService {
     // Get additional metrics
     const metrics = await this.salesService.getMetrics();
 
+    // Verificar si hay datos
+    const hasData = salesData.length > 0;
+
     // Create the report data structure
     const reportData = {
       generatedAt: new Date().toISOString(),
@@ -27,21 +30,18 @@ export class ReportsService {
         endDate: endDate || 'No end date specified',
         productId: productId || 'All products',
       },
+      hasData: hasData,
+      message: hasData
+        ? 'Report generated successfully'
+        : 'No data found for the specified criteria',
       summary: {
-        totalSales: metrics.totalSales,
+        totalSales: metrics.totalSales ?? 0,
         totalItems: salesData.reduce((sum, sale) => sum + sale.quantity, 0),
-        averageOrderValue: salesData.length
-          ? metrics.totalSales / salesData.length
+        averageOrderValue: hasData
+          ? (metrics.totalSales ?? 0) / salesData.length
           : 0,
       },
-      details: salesData.map((sale) => ({
-        id: sale.id,
-        date: sale.date,
-        product: sale.product.name,
-        quantity: sale.quantity,
-        unitPrice: sale.unitPrice,
-        total: sale.quantity * sale.unitPrice,
-      })),
+      details: salesData,
     };
 
     // Generate the report in the requested format
@@ -64,12 +64,8 @@ export class ReportsService {
   }
 
   private generatePdfReport(data: any): any {
-    // For demonstration purposes, we're returning a structured representation
-    // of what would be in the PDF, since we can't generate actual PDFs in this context.
-    // In a real implementation, you would use a library like PDFKit to generate a PDF
-
     // Build a text representation that simulates PDF content
-    const pdfContent = `
+    let pdfContent = `
       SALES REPORT
       ============
       
@@ -83,9 +79,17 @@ export class ReportsService {
       
       SUMMARY
       -------
-      Total Sales: $${data.summary.totalSales.toFixed(2)}
+    `;
+
+    if (!data.hasData) {
+      pdfContent += `
+      No sales data found for the specified criteria.
+      `;
+    } else {
+      pdfContent += `
+      Total Sales: $${Number(data.summary.totalSales || 0).toFixed(2)}
       Total Items: ${data.summary.totalItems}
-      Average Order Value: $${data.summary.averageOrderValue.toFixed(2)}
+      Average Order Value: $${Number(data.summary.averageOrderValue || 0).toFixed(2)}
       
       DETAILS
       -------
@@ -96,19 +100,17 @@ export class ReportsService {
          Date: ${new Date(item.date).toLocaleDateString()}
          Product: ${item.product}
          Quantity: ${item.quantity}
-         Unit Price: $${item.unitPrice.toFixed(2)}
-         Total: $${item.total.toFixed(2)}
+         Unit Price: $${Number(item.unitPrice || 0).toFixed(2)}
+         Total: $${Number((item.quantity || 0) * (item.unitPrice || 0)).toFixed(2)}
          ------------------------`,
         )
         .join('\n')}
-    `;
+      `;
+    }
 
     return {
       format: 'pdf',
-      // In a real implementation, this would be binary PDF data
-      // But for demo purposes, we're returning the text content
       content: pdfContent.trim(),
-      // Simulate PDF metadata
       metadata: {
         title: 'Sales Report',
         author: 'Sales Management System',

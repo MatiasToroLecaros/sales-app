@@ -11,6 +11,9 @@ export class Sale {
   @Column({ name: 'ID_PRODUCTO' })
   productId: number;
 
+  @Column({ name: 'ID_USUARIO' })
+  userId: number;
+  
   @Column({ name: 'CANTIDAD', type: 'int' })
   quantity: number;
 

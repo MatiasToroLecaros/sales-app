@@ -175,7 +175,7 @@ export class SalesService {
     }
 
     if (userId) {
-      query.andWhere('sale.userId = :userId', { userId });
+      query.andWhere('"sale"."ID_USUARIO" = :userId', { userId });
     }
     
     return query.getMany();
