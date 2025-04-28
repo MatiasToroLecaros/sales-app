@@ -1,98 +1,159 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Sales Management API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<div align="center">
+  <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />
+  <br>
+  <h3>A modern sales management REST API built with NestJS, TypeORM and PostgreSQL</h3>
+</div>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Overview
 
-## Description
+This project is a robust REST API for sales management, developed using NestJS framework and PostgreSQL. It provides a complete solution for managing products, users, sales records, and generating reports. The API follows modern development practices including typed interfaces, repository pattern, dependency injection, and comprehensive documentation.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## ✨ Features
 
-## Project setup
+- **Authentication & Authorization**: JWT-based auth system with secure password hashing
+- **User Management**: Create, update, and manage user accounts with proper role access
+- **Product Management**: Full CRUD operations for product catalog
+- **Sales Records**: Track and manage all sales with filtering capabilities
+- **Reporting System**: Generate sales reports in different formats (JSON, PDF)
+- **API Documentation**: Fully documented API with Swagger UI
+- **Database Integration**: TypeORM with PostgreSQL for reliable data persistence
+- **Containerization**: Docker and Docker Compose for easy deployment
 
-```bash
-$ npm install
+## 🛠️ Technology Stack
+
+- **Backend Framework**: [NestJS](https://nestjs.com/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **ORM**: [TypeORM](https://typeorm.io/)
+- **Authentication**: JWT with Passport.js
+- **API Documentation**: Swagger/OpenAPI
+- **Containerization**: Docker & Docker Compose
+- **Password Hashing**: bcrypt
+- **Environment Configuration**: dotenv
+
+## 📋 API Endpoints
+
+The API provides the following main endpoints:
+
+- **Auth**: `/auth/register`, `/auth/login`
+- **Users**: `/users` (CRUD operations)
+- **Products**: `/products` (CRUD operations)
+- **Sales**: `/sales` (Create, Read, Filter, Update, Delete)
+- **Reports**: `/reports/generate` (Generate sales reports)
+
+Full API documentation is available at `/api` endpoint when the server is running.
+
+## 🏗️ Architecture
+
+The project follows a modular architecture with the following components:
+
+- **Controllers**: Handle HTTP requests and define API endpoints
+- **Services**: Implement business logic
+- **Repositories**: Handle database operations
+- **DTOs**: Define data transfer objects for validation and type safety
+- **Entities**: Define database models
+- **Guards**: Protect routes with authentication
+- **Modules**: Organize related components
+
+## 🚦 Getting Started
+
+### Prerequisites
+
+- Docker and Docker Compose
+- Node.js (for development)
+
+### Running with Docker
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MatiasToroLecaros/sales-app.git
+   cd sales-app
+   ```
+
+2. Start the Docker containers:
+   ```bash
+   docker-compose up
+   ```
+
+3. The API will be available at http://localhost:3000
+   - API documentation: http://localhost:3000/api
+
+### Development Setup
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Create a `.env` file with the following variables:
+   ```
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USERNAME=myuser
+   DB_PASSWORD=mypassword
+   DB_NAME=mydb
+   JWT_SECRET=yoursecretkey
+   ```
+
+3. Run in development mode:
+   ```bash
+   npm run start:dev
+   ```
+
+## 🧪 Testing the API
+
+After starting the server, you can test the API using the Swagger UI at http://localhost:3000/api.
+
+### Basic Flow:
+
+1. Register a user: `POST /auth/register`
+2. Login to get an auth token: `POST /auth/login`
+3. Use the token to authenticate other requests
+4. Create products: `POST /products`
+5. Create sales: `POST /sales`
+6. Generate reports: `POST /reports/generate`
+
+## 📁 Project Structure
+
+```
+src/
+├── auth/                # Authentication module
+├── products/            # Products module
+├── sales/               # Sales module
+├── users/               # Users module
+├── reports/             # Reports module
+├── app.module.ts        # Main application module
+├── main.ts              # Application entry point
 ```
 
-## Compile and run the project
+## 🔒 Security Features
 
-```bash
-# development
-$ npm run start
+- JWT token-based authentication
+- Password hashing with bcrypt
+- Route protection with Guards
+- Input validation with class-validator
+- Data sanitization
 
-# watch mode
-$ npm run start:dev
+## 🔄 CI/CD
 
-# production mode
-$ npm run start:prod
-```
+The project includes configuration for continuous integration and deployment:
 
-## Run tests
+- Docker configuration for containerized deployments
+- Environment variables for different deployment scenarios
 
-```bash
-# unit tests
-$ npm run test
+## 📈 Future Improvements
 
-# e2e tests
-$ npm run test:e2e
+- Add unit and integration tests
+- Implement caching for improved performance
+- Add role-based access control
+- Enhance reporting capabilities with charts and visualizations
+- Implement WebSocket for real-time updates
 
-# test coverage
-$ npm run test:cov
-```
+## 📄 License
 
-## Deployment
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 📧 Contact
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+For any inquiries, please reach out to [mtorolecaros@gmail.com](mailto:mtorolecaros@gmail.com)
