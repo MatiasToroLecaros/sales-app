@@ -9,9 +9,9 @@ import {
     UseGuards,
     ParseIntPipe,
   } from '@nestjs/common';
-  import { ProductsService } from './products.service';
-  import { CreateProductDto, UpdateProductDto } from './dto/products.dto';
-  import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+  import { ProductsService } from '../services/products.service';
+  import { CreateProductDto, UpdateProductDto } from '../dto/products.dto';
+  import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
   import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
   
   @ApiTags('products')
