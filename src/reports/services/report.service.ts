@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SalesService } from '../../sales/services/sales.service';
 import { GenerateReportDto, ReportFormat } from '../dto/generate-report.dto';
+import * as PDFDocument from 'pdfkit';
 
 @Injectable()
 export class ReportsService {
@@ -63,59 +64,102 @@ export class ReportsService {
     };
   }
 
-  private generatePdfReport(data: any): any {
-    // Build a text representation that simulates PDF content
-    let pdfContent = `
-      SALES REPORT
-      ============
-      
-      Generated: ${data.generatedAt}
-      
-      FILTERS
-      -------
-      Start Date: ${data.filters.startDate}
-      End Date: ${data.filters.endDate}
-      Product: ${data.filters.productId}
-      
-      SUMMARY
-      -------
-    `;
-
-    if (!data.hasData) {
-      pdfContent += `
-      No sales data found for the specified criteria.
-      `;
-    } else {
-      pdfContent += `
-      Total Sales: $${Number(data.summary.totalSales || 0).toFixed(2)}
-      Total Items: ${data.summary.totalItems}
-      Average Order Value: $${Number(data.summary.averageOrderValue || 0).toFixed(2)}
-      
-      DETAILS
-      -------
-      ${data.details
-        .map(
-          (item) =>
-            `ID: ${item.id}
-         Date: ${new Date(item.date).toLocaleDateString()}
-         Product: ${item.product.name || 'Unknown product'}
-         Quantity: ${item.quantity}
-         Unit Price: $${Number(item.unitPrice || 0).toFixed(2)}
-         Total: $${Number((item.quantity || 0) * (item.unitPrice || 0)).toFixed(2)}
-         ------------------------`,
-        )
-        .join('\n')}
-      `;
-    }
-
-    return {
-      format: 'pdf',
-      content: pdfContent.trim(),
-      metadata: {
-        title: 'Sales Report',
-        author: 'Sales Management System',
-        creationDate: data.generatedAt,
-      },
-    };
+  private async generatePdfReport(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Crear un documento PDF
+        const doc = new PDFDocument({ margin: 50 });
+        
+        // Buffer para almacenar el PDF
+        const chunks: Buffer[] = [];
+        let result;
+        
+        // Capturar todos los segmentos del PDF
+        doc.on('data', (chunk) => {
+          chunks.push(chunk);
+        });
+        
+        // Cuando el PDF está completo, resolver la promesa
+        doc.on('end', () => {
+          result = Buffer.concat(chunks);
+          resolve({
+            format: 'pdf',
+            content: result,
+            contentType: 'application/pdf',
+            filename: `Sales_Report_${new Date().toISOString().split('T')[0]}.pdf`,
+            metadata: {
+              title: 'Sales Report',
+              author: 'Sales Management System',
+              creationDate: data.generatedAt,
+            },
+          });
+        });
+        
+        // Diseñar el PDF
+        
+        // Título
+        doc.fontSize(20).text('SALES REPORT', { align: 'center' });
+        doc.moveDown();
+        
+        // Fecha de generación
+        doc.fontSize(12).text(`Generated: ${new Date(data.generatedAt).toLocaleString()}`);
+        doc.moveDown();
+        
+        // Filtros
+        doc.fontSize(16).text('FILTERS', { underline: true });
+        doc.fontSize(12).text(`Start Date: ${data.filters.startDate}`);
+        doc.text(`End Date: ${data.filters.endDate}`);
+        doc.text(`Product: ${data.filters.productId}`);
+        doc.moveDown();
+        
+        // Si no hay datos, mostrar mensaje
+        if (!data.hasData) {
+          doc.fontSize(14).text('No sales data found for the specified criteria.', { align: 'center' });
+        } else {
+          // Resumen
+          doc.fontSize(16).text('SUMMARY', { underline: true });
+          doc.fontSize(12).text(`Total Sales: $${Number(data.summary.totalSales).toFixed(2)}`);
+          doc.text(`Total Items: ${data.summary.totalItems}`);
+          doc.text(`Average Order Value: $${Number(data.summary.averageOrderValue).toFixed(2)}`);
+          doc.moveDown();
+          
+          // Detalles
+          doc.fontSize(16).text('DETAILS', { underline: true });
+          
+          // Tabla de ventas
+          let yPosition = doc.y + 10;
+          const itemHeight = 90;
+          
+          // Por cada venta, añadir detalles
+          data.details.forEach((item: any) => {
+            // Verificar si necesitamos una nueva página
+            if (yPosition + itemHeight > doc.page.height - 50) {
+              doc.addPage();
+              yPosition = 50;
+            }
+            
+            doc.fontSize(12).text(`ID: ${item.id}`, { continued: false });
+            doc.text(`Date: ${new Date(item.date).toLocaleDateString()}`, { continued: false });
+            doc.text(`Product: ${item.product?.name || 'Unknown product'}`, { continued: false });
+            doc.text(`Quantity: ${item.quantity}`, { continued: false });
+            doc.text(`Unit Price: $${Number(item.unitPrice).toFixed(2)}`, { continued: false });
+            doc.text(`Total: $${Number(item.quantity * item.unitPrice).toFixed(2)}`, { continued: false });
+            
+            // Línea separadora
+            doc.moveDown();
+            doc.text('------------------------');
+            doc.moveDown();
+            
+            yPosition += itemHeight;
+          });
+        }
+        
+        // Finalizar el documento
+        doc.end();
+        
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 }
