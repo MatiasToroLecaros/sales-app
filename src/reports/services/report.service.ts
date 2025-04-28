@@ -98,7 +98,7 @@ export class ReportsService {
           (item) =>
             `ID: ${item.id}
          Date: ${new Date(item.date).toLocaleDateString()}
-         Product: ${item.product}
+         Product: ${item.product.name || 'Unknown product'}
          Quantity: ${item.quantity}
          Unit Price: $${Number(item.unitPrice || 0).toFixed(2)}
          Total: $${Number((item.quantity || 0) * (item.unitPrice || 0)).toFixed(2)}
