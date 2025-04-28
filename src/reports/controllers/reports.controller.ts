@@ -25,12 +25,12 @@ export class ReportsController {
     const report = await this.reportsService.generateReport(generateReportDto);
     
     if (generateReportDto.format === ReportFormat.PDF && report.contentType === 'application/pdf') {
-      // Configurar headers para la descarga de PDF
+      // Configure headers for PDF download
       response.setHeader('Content-Type', 'application/pdf');
       response.setHeader('Content-Disposition', `attachment; filename=${report.filename}`);
       return response.send(report.content);
     } else {
-      // Para formato JSON o en caso de no poder generar PDF
+      // For JSON format or when unable to generate PDF
       return response.json(report);
     }
   }

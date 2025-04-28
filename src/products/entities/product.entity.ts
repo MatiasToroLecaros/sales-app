@@ -2,7 +2,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Sale } from '../../sales/entities/sale.entity';
 
-@Entity('PRODUCTOS') // Nombre de tabla en español y mayúsculas
+@Entity('PRODUCTOS') // Table name in Spanish and uppercase
 export class Product {
   @PrimaryGeneratedColumn({ name: 'ID_PRODUCTO' })
   id: number;

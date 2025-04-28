@@ -20,7 +20,7 @@ import { ReportsModule } from './reports/reports.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true, // ⚠️ Solo para dev, en producción usar migraciones
+      synchronize: true, // ⚠️ Only for dev, use migrations in production
     }),
     AuthModule,
     ProductsModule,

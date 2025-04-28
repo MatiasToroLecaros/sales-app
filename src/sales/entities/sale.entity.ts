@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { Product } from '../../products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
 
-@Entity('VENTAS') // Nombre de tabla en español y mayúsculas
+@Entity('VENTAS') // Table name in Spanish and uppercase
 export class Sale {
   @PrimaryGeneratedColumn({ name: 'ID_VENTA' })
   id: number;
@@ -32,7 +32,7 @@ export class Sale {
     onDelete: 'RESTRICT', 
     onUpdate: 'CASCADE' 
   })
-  @JoinColumn({ name: 'ID_PRODUCTO' }) // Nombre de la columna de clave foránea
+  @JoinColumn({ name: 'ID_PRODUCTO' }) // Foreign key column name
   product: Product;
 
   @ManyToOne(() => User, user => user.sales, {

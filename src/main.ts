@@ -4,10 +4,10 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
-  // Crear una instancia de logger
+  // Create a logger instance
   const logger = new Logger('Bootstrap');
   
-  // Añadir más verbosidad en modo desarrollo
+  // Add more verbosity in development mode
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
@@ -25,7 +25,7 @@ async function bootstrap() {
   app.enableCors();
   await app.listen(3000);
   
-  // Mensaje para confirmar que la aplicación está corriendo
+  // Message to confirm the application is running
   logger.log(`Application is running on: ${await app.getUrl()}`);
   logger.log('Hot reload is enabled. Waiting for file changes...');
 }
