@@ -12,7 +12,7 @@ import {
     UseInterceptors,
     ClassSerializerInterceptor
   } from '@nestjs/common';
-  import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+  import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
   import { UsersService } from '../services/users.service';
   import { CreateUserDto } from '../dto/create-user.dto';
   import { UpdateUserDto } from '../dto/update-user.dto';
@@ -70,6 +70,28 @@ import {
   
     @Patch(':id')
     @ApiOperation({ summary: 'Update a user' })
+    @ApiBody({
+      description: 'User update data',
+      type: UpdateUserDto,
+      examples: {
+        user_update: {
+          summary: 'Basic user update',
+          description: 'A typical example of updating a user',
+          value: {
+            name: 'John Doe Updated',
+            email: 'john.updated@example.com',
+            password: 'newPassword123'
+          }
+        },
+        partial_update: {
+          summary: 'Partial user update',
+          description: 'Example of updating only specific fields',
+          value: {
+            name: 'John Doe Updated'
+          }
+        }
+      }
+    })
     @ApiResponse({ 
       status: 200, 
       description: 'User updated successfully',
