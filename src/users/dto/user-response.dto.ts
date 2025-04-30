@@ -16,7 +16,10 @@ export class UserResponseDto {
   @ApiProperty({ description: 'User email' })
   email: string;
 
-  constructor(partial: Partial<UserResponseDto>) {
+  constructor(partial: Partial<any>) {
     Object.assign(this, partial);
+    if ('password' in this) {
+      delete this.password;
+    }
   }
 }

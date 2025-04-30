@@ -8,7 +8,9 @@ import {
     Patch, 
     Delete, 
     UseGuards,
-    ParseIntPipe
+    ParseIntPipe,
+    UseInterceptors,
+    ClassSerializerInterceptor
   } from '@nestjs/common';
   import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
   import { UsersService } from '../services/users.service';
@@ -20,6 +22,7 @@ import {
   @ApiTags('users')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Controller('users')
   export class UsersController {
     constructor(private readonly usersService: UsersService) {}
