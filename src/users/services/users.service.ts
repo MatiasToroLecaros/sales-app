@@ -52,6 +52,7 @@ export class UsersService {
     });
     
     const savedUser = await this.userRepository.save(user);
+    console.log(savedUser)
     return new UserResponseDto(savedUser);
   }
 
@@ -66,7 +67,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    
+    console.log(user)
     return new UserResponseDto(user);
   }
 
@@ -109,6 +110,7 @@ export class UsersService {
     
     // Save the updated user
     const savedUser = await this.userRepository.save(user);
+    console.log(savedUser)
     return new UserResponseDto(savedUser);
   }
 

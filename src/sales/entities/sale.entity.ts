@@ -1,7 +1,7 @@
 // backend/src/sales/entities/sale.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('VENTAS') // Table name in Spanish and uppercase
 export class Sale {
