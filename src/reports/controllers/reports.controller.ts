@@ -4,6 +4,7 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagg
 import { ReportsService } from '../services/report.service';
 import { GenerateReportDto, ReportFormat } from '../dto/generate-report.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { Report, PdfReport, JsonReport } from '../interfaces/report.interface';
 
 @ApiTags('reports')
 @ApiBearerAuth()
@@ -16,7 +17,7 @@ export class ReportsController {
   @ApiOperation({ summary: 'Generate a sales report' })
   @ApiResponse({ 
     status: 201, 
-    description: 'Report generated successfully' 
+    description: 'Report generated successfully',
   })
   async generateReport(
     @Body() generateReportDto: GenerateReportDto,
@@ -24,14 +25,14 @@ export class ReportsController {
   ) {
     const report = await this.reportsService.generateReport(generateReportDto);
     
-    if (generateReportDto.format === ReportFormat.PDF && report.contentType === 'application/pdf') {
-      // Configure headers for PDF download
-      response.setHeader('Content-Type', 'application/pdf');
-      response.setHeader('Content-Disposition', `attachment; filename=${report.filename}`);
-      return response.send(report.content);
+    if (generateReportDto.format === ReportFormat.PDF) {
+      const pdfReport = report as PdfReport;
+      response.setHeader('Content-Type', pdfReport.contentType);
+      response.setHeader('Content-Disposition', `attachment; filename=${pdfReport.filename}`);
+      return response.send(pdfReport.content);
     } else {
-      // For JSON format or when unable to generate PDF
-      return response.json(report);
+      const jsonReport = report as JsonReport;
+      return response.json(jsonReport);
     }
   }
 }
