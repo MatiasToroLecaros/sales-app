@@ -15,6 +15,8 @@ export class User {
   @Column({ name: 'CONTRASENA', type: 'varchar', length: 100 })
   password: string;
 
-  @OneToMany(() => Sale, sale => sale.user)
+  @OneToMany(() => Sale, sale => sale.user,{
+    onDelete: 'CASCADE'
+  })
   sales: Sale[];
 }
