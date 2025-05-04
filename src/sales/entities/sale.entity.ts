@@ -36,7 +36,7 @@ export class Sale {
   product: Product;
 
   @ManyToOne(() => User, user => user.sales, {
-    onDelete: 'RESTRICT',
+    onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
   })
   @JoinColumn({ name: 'ID_USUARIO' })

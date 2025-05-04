@@ -7,6 +7,7 @@ import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
+import { UserWithSalesDto } from '../dto/user-with-sales.dto';
 
 @Injectable()
 export class UsersService {
@@ -70,6 +71,37 @@ export class UsersService {
     console.log(user)
     return new UserResponseDto(user);
   }
+
+// Add to src/users/services/users.service.ts
+async findOneWithSales(id: number): Promise<UserWithSalesDto> {
+  // Find user with sales relationship
+  const user = await this.userRepository.findOne({
+    where: { id },
+    relations: ['sales', 'sales.product'],
+  });
+  
+  if (!user) {
+    throw new NotFoundException(`User with ID ${id} not found`);
+  }
+  
+  // Transform data to expected format
+  const purchases = user.sales.map(sale => ({
+    id: sale.id,
+    productName: sale.product.name,
+    quantity: sale.quantity,
+    unitPrice: sale.unitPrice,
+    total: sale.quantity * sale.unitPrice,
+    date: sale.date
+  }));
+  
+  // Build the response
+  const userWithSales = new UserWithSalesDto({
+    ...user,
+    purchases
+  });
+  
+  return userWithSales;
+}
 
   async findByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { email } });
